@@ -1,0 +1,17 @@
+{
+  "id": "chapter",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Chapter",
+  "type": "object",
+  "properties": {
+    "chapterIndex": {
+      "description": "Index position for a corresponding TOC position",
+      "type": "number"
+    },
+    "text": {
+      "description": "Actual text content of the chapter",
+      "type": "string"
+    }
+  },
+  "required": ["chapterIndex", "text"]
+}

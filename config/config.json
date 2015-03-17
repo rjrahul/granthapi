@@ -1,0 +1,24 @@
+{
+  "defaults": {
+    "metCol": "booksMeta",
+    "conCol": "content"
+  },
+  "development": {
+    "mongodbHost": "localhost",
+    "mongodbPort": "27017",
+    "mongodbUsername": "",
+    "mongodbPassword": "",
+    "mongodbDatabase": "Granths",
+    "metCol": "booksMeta",
+    "conCol": "content"
+  },
+  "tests": {
+    "mongodbHost": "localhost",
+    "mongodbPort": "27017",
+    "mongodbUsername": "",
+    "mongodbPassword": "",
+    "mongodbDatabase": "testsDb",
+    "metCol": "booksMeta",
+    "conCol": "content"
+  }
+}

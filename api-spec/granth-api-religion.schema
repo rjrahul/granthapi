@@ -1,0 +1,13 @@
+{
+  "id": "religion",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Religion",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "Name of the religion",
+      "type": "string"
+    }
+  },
+  "required": ["name"]
+}

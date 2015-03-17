@@ -1,0 +1,32 @@
+{
+  "id": "book",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Book",
+  "type": "object",
+  "properties": {
+    "title": {
+      "description": "Title of the book",
+      "type": "string"
+    },
+    "author": {
+      "description": "Author of the book",
+      "type": "string"
+    },
+    "language": {
+      "description": "Language of the book",
+      "type": "string"
+    },
+    "published": {
+      "description": "Date of publishing",
+      "type": "string"
+    },
+    "toc": {
+      "title": "Table of contents",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string" }
+    }
+  },
+  "required": ["title", "language", "author", "toc"]
+}

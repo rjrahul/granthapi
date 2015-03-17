@@ -1,0 +1,55 @@
+{
+  "id": "http://granth.net/api",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "religions": {
+      "title": "Religion Set",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "allOf": [
+          {
+            "$ref": "granth-api-religion.schema#/religion"
+          },
+          {
+            "properties": {
+              "books": {
+                "title": "Book Set",
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "allOf": [
+                    {
+                      "$ref": "granth-api-book.schema#/book"
+                    },
+                    {
+                      "properties": {
+                        "bookId": {
+                          "description": "Unique id of a book",
+                          "type": "string"
+                        },
+                        "chapters": {
+                          "title": "Chapter Set",
+                          "type": "array",
+                          "minItems": 1,
+                          "uniqueItems": true,
+                          "items": {
+                            "$ref": "granth-api-chapter.schema#/chapter"
+                          }
+                        }
+                      },
+                      "required": ["bookId"]
+                    }
+                  ]
+                }
+              } 
+            }
+          }
+        ]
+      }
+    }
+  }
+}

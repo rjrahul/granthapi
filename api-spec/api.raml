@@ -1,0 +1,90 @@
+#%RAML 0.8
+title: Granth
+version: 0.1
+baseUri: http://localhost:3501/granthdb/{version}
+schemas:
+  - religions: !include granth-api-get-response.schema
+  - religion: !include granth-api-religion.schema
+  - title: !include granth-api-book.schema
+  - chapter: !include granth-api-chapter.schema
+/religions:
+  displayName: Religion
+  description: This would provide a distinct list of all religions for which Granths are available.
+  get:
+    description: Provides list of distinct religions.
+    responses:
+      200:
+        body:
+          application/json:
+            schema: religions
+            example: !include granth-religions-retrieve.sample
+  /{religionName}:
+    description: Religion name. This is case sensitive and need to match the complete name of the religion.
+    put:
+      description: This would update the name of the religion with provided body for all Granths available for that religion.
+      body:
+        application/json:
+          schema: religion
+    delete:
+      description: This would delete all documents related to the religion. It should be very cautiously used as this has a very huge scope and no way of recovery.
+    /books:
+      displayName: Title
+      description: This will provide list of titles available for a religion.
+      get:
+        description: Provides list of all titles available for religion.
+        responses:
+          200:
+            body:
+              application/json:
+                schema: religions
+                example: !include granth-books-retrieve.sample
+      post:
+        description: Add a new title to religion.
+        body:
+          application/json:
+            schema: title
+      /{bookId}:
+        description: Title entity.
+        get:
+          description: Provides the attributes for a title.
+          responses:
+            200:
+              body:
+                application/json:
+                  schema: religions
+                  example: !include granth-book-retrieve.sample
+        put:
+          description: Update the attributes for a single title.
+          body:
+            application/json:
+              schema: title
+        delete:
+          description: This would delete the book represented by {bookId}. The contents are irrecoverable so it should be used cautiously.
+        /chapters:
+          displayName: Chapter
+          description: This provides content of all chapters associated with the title.
+          get:
+            description: Provides content of all chapters for a title.
+            responses:
+              200:
+                body:
+                  application/json:
+                    schema: religions
+                    example: !include granth-chapters-retrieve.sample
+          /{chapterIndex}:
+            description: Single chapter content
+            get:
+              description: Provides content of single chapter based on index provided by TOC.
+              responses:
+                200:
+                  body:
+                    application/json:
+                      schema: religions
+                      example: !include granth-chapter-retrieve.sample
+            put:
+              description: Provides modification for content of a chapter.
+              body:
+                application/json:
+                  schema: chapter
+            delete:
+              description: This would delete the chapter at index {chapterIndex}. The contents are irrecoverable and it should be used cautiously.

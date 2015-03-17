@@ -1,0 +1,29 @@
+"religions": [
+  {
+    "name": "Jain",
+    "books": [
+      {
+        "bookId": "5464ca53bcdaf5df7fb42fed",
+        "title": "First granth",
+        "author": "First Author",
+        "language": "hi",
+        "published": "2010-10-14",
+        "toc": [
+          "First chapter",
+          "Second chapter"
+        ]
+      },
+      {
+        "bookId": "5464ca53bcdaf5df7fb42ff2",
+        "title": "Second granth",
+        "author": "Second Author",
+        "language": "hi",
+        "published": "2010-10-14",
+        "toc": [
+          "Chapter One",
+          "Chapter Two"
+        ]
+      }
+    ]
+  }
+]

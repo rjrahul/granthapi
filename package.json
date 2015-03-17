@@ -1,0 +1,27 @@
+{
+  "name": "granthapi-tdd",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "test": "mocha test"
+  },
+  "dependencies": {
+    "body-parser": "1.x.x",
+    "cookie-parser": "1.x.x",
+    "debug": "2.x.x",
+    "express": "4.x.x",
+    "jade": "1.x.x",
+    "mongodb": "2.x.x",
+    "morgan": "1.x.x",
+    "serve-favicon": "2.x.x",
+    "underscore": "1.x.x",
+    "winston": "^0.9.0"
+  },
+  "devDependencies": {
+    "chai": "2.x.x",
+    "supertest": "0.x.x",
+    "mocha": "2.x.x",
+    "methods": "1.x.x"
+  }
+}
