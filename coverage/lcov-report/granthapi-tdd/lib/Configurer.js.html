@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for granthapi-tdd/lib/Configurer.js</title>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="../../prettify.css">
+
+    <link rel="stylesheet" href="../../base.css">
+    <style type='text/css'>
+        div.coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class="header high">
+    <h1>Code coverage report for <span class="entity">granthapi-tdd/lib/Configurer.js</span></h1>
+    <h2>
+        
+        Statements: <span class="metric">100% <small>(22 / 22)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        
+        
+        Branches: <span class="metric">100% <small>(42 / 42)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        
+        
+        Functions: <span class="metric">100% <small>(5 / 5)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        
+        
+        Lines: <span class="metric">100% <small>(21 / 21)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
+    </h2>
+    <div class="path"><a href="../../index.html">All files</a> &#187; <a href="index.html">granthapi-tdd/lib/</a> &#187; Configurer.js</div>
+</div>
+<div class="body">
+<pre><table class="coverage">
+<tr><td class="line-count">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">7</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">58</span>
+<span class="cline-any cline-yes">58</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">58</span>
+<span class="cline-any cline-yes">58</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">58</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">24</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24</span>
+<span class="cline-any cline-yes">24</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">var fs = require('fs');
+/**
+ * Created by RJ on 1/19/15.
+ *
+ * Class to load configurations
+ */
+module.exports = function Configurer() {
+    var defaultDatabaseConfiguration = {
+        mongodbHost: "localhost",
+        mongodbPort: "27017",
+        mongodbUsername: "",
+        mongodbPassword: "",
+        mongodbDatabase: ""
+    };
+&nbsp;
+    function createMongoDbUrl(properties) {
+        var mongodbUrl = "mongodb://";
+        if (properties.mongodbUsername &amp;&amp; properties.mongodbPassword) {
+            mongodbUrl += properties.mongodbUsername + ":" + properties.mongodbPassword + "@";
+        }
+        mongodbUrl += properties.mongodbHost + ":" + properties.mongodbPort + "/";
+        if (properties.mongodbDatabase) mongodbUrl += properties.mongodbDatabase;
+&nbsp;
+        return mongodbUrl;
+    }
+&nbsp;
+    return {
+        loadDefaults: function () {
+            var properties = {
+                mongodbHost: process.env.OPENSHIFT_MONGODB_DB_HOST || defaultDatabaseConfiguration.mongodbHost,
+                mongodbPort: process.env.OPENSHIFT_MONGODB_DB_PORT || defaultDatabaseConfiguration.mongodbPort,
+                mongodbUsername: process.env.OPENSHIFT_MONGODB_DB_USERNAME || defaultDatabaseConfiguration.mongodbUsername,
+                mongodbPassword: process.env.OPENSHIFT_MONGODB_DB_PASSWORD || defaultDatabaseConfiguration.mongodbPassword,
+                mongodbDatabase: process.env.OPENSHIFT_MONGODB_DB_DATABASE || defaultDatabaseConfiguration.mongodbDatabase
+            };
+            properties.mongodbUrl = process.env.OPENSHIFT_MONGODB_DB_URL || createMongoDbUrl(properties);
+            return properties;
+        },
+&nbsp;
+        loadConfigurationFromFile: function (fileName) {
+            var fileData = JSON.parse(fs.readFileSync(fileName, {encoding: 'utf-8'}));
+            var properties = {
+                mongodbHost: fileData.mongodbHost || "",
+                mongodbPort: fileData.mongodbPort || "",
+                mongodbUsername: fileData.mongodbUsername || "",
+                mongodbPassword: fileData.mongodbPassword || "",
+                mongodbDatabase: fileData.mongodbDatabase || ""
+            };
+            properties.mongodbUrl = fileData.mongodbUrl || createMongoDbUrl(properties);
+            return properties;
+        },
+&nbsp;
+        useConfiguration: function (conf) {
+            var properties = {
+                mongodbHost: conf.mongodbHost || "",
+                mongodbPort: conf.mongodbPort || "",
+                mongodbUsername: conf.mongodbUsername || "",
+                mongodbPassword: conf.mongodbPassword || "",
+                mongodbDatabase: conf.mongodbDatabase || ""
+            };
+            properties.mongodbUrl = conf.mongodbUrl || createMongoDbUrl(properties);
+            return properties;
+        }
+    };
+};</pre></td></tr>
+</table></pre>
+
+</div>
+<div class="footer">
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Mar 25 2015 14:23:54 GMT+0530 (IST)</div>
+</div>
+
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+
+<script src="../../sorter.js"></script>
+</body>
+</html>

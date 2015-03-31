@@ -1,0 +1,22 @@
+{
+  "name": "granthapi-tdd",
+  "version": "0.0.1",
+  "authors": [
+    "rjrahul <rahul.jain.9684@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.5.5",
+    "core-ajax": "polymer/core-ajax#~0.5.5"
+  },
+  "devDependencies": {
+    "web-component-tester": "~2.2.6"
+  }
+}

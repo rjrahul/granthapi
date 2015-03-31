@@ -1,0 +1,211 @@
+step: loadPlugins
+step: configure
+hook: configure
+Expanded local browsers: [ 'all' ] into capabilities: [ { browserName: 'chrome',
+    version: '41',
+    chromeOptions: { binary: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' } },
+  { browserName: 'safari',
+    version: '8.0.4',
+    'safari.options': { skipExtensionInstallation: true } } ]
+hook done: configure
+configuration: { '0': 'test/client',
+  suites: [ 'granthapi-tdd/test/client/index.html' ],
+  verbose: true,
+  expanded: false,
+  testTimeout: 90000,
+  persistent: false,
+  extraScripts: [],
+  activeBrowsers: 
+   [ { browserName: 'chrome', version: '41', chromeOptions: [Object] },
+     { browserName: 'safari',
+       version: '8.0.4',
+       'safari.options': [Object] } ],
+  browserOptions: {},
+  plugins: 
+   { local: { disabled: false, seleniumPort: NaN },
+     sauce: { disabled: false } },
+  webserver: 
+   { hostname: 'localhost',
+     staticContent: 
+      { '^(.*/web-component-tester|)/browser\.js$': '/Users/RJ/.npm/lib/node_modules/web-component-tester/browser.js',
+        '^(.*/web-component-tester|)/environment\.js$': '/Users/RJ/.npm/lib/node_modules/web-component-tester/environment.js' },
+     webRunnerPath: '/granthapi-tdd/test/client/index.html' },
+  _: [ 'test/client' ],
+  ttyOutput: undefined,
+  root: '/Users/RJ/Dropbox/IdeaProjects' }
+hook: prepare
+hook: prepare:selenium
+hook done: prepare:selenium
+Starting Selenium server for local browsers
+09:15:30.849 INFO - Launching a standalone server
+Setting system property webdriver.chrome.driver to /Users/RJ/.npm/lib/node_modules/web-component-tester/node_modules/wct-local/node_modules/selenium-standalone/.selenium/chromedriver/2.14-x64-chromedriver
+09:15:30.907 INFO - Java: Oracle Corporation 25.40-b25
+09:15:30.907 INFO - OS: Mac OS X 10.10.2 x86_64
+09:15:30.920 INFO - v2.45.0, with Core v2.45.0. Built from revision 5017cb8
+09:15:31.036 INFO - Default driver org.openqa.selenium.ie.InternetExplorerDriver registration is skipped: registration capabilities Capabilities [{ensureCleanSession=true, browserName=internet explorer, version=, platform=WINDOWS}] does not match with current platform: MAC
+09:15:31.081 INFO - RemoteWebDriver instances should connect to: http://127.0.0.1:58921/wd/hub
+09:15:31.082 INFO - Version Jetty/5.1.x
+09:15:31.083 INFO - Started HttpContext[/selenium-server,/selenium-server]
+09:15:31.126 INFO - Started org.openqa.jetty.jetty.servlet.ServletHandler@d7b1517
+09:15:31.127 INFO - Started HttpContext[/wd,/wd]
+09:15:31.127 INFO - Started HttpContext[/selenium-server/driver,/selenium-server/driver]
+09:15:31.127 INFO - Started HttpContext[/,/]
+09:15:31.133 INFO - Started SocketListener on 0.0.0.0:58921
+09:15:31.133 INFO - Started org.openqa.jetty.jetty.Server@7cd84586
+Selenium server running on port 58921
+hook: prepare:webserver
+hook done: prepare:webserver
+Web server running on port 58926 and serving from /Users/RJ/Dropbox/IdeaProjects
+hook done: prepare
+step: runTests
+chrome 41                CALL init({"browserName":"chrome","version":"41","chromeOptions":{"binary":"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"}})
+chrome 41                POST /session {"desiredCapabilities":{"browserName":"chrome","version":"41","chromeOptions":{"binary":"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"},"javascriptEnabled":true,"platform":"ANY"}}
+safari 8.0.4             CALL init({"browserName":"safari","version":"8.0.4","safari.options":{"skipExtensionInstallation":true}})
+safari 8.0.4             POST /session {"desiredCapabilities":{"browserName":"safari","version":"8.0.4","safari.options":{"skipExtensionInstallation":true},"javascriptEnabled":true,"platform":"ANY"}}
+09:15:31.612 INFO - Executing: [new session: Capabilities [{browserName=safari, safari.options={skipExtensionInstallation=true}, javascriptEnabled=true, version=8.0.4, platform=ANY}]])
+09:15:31.612 INFO - Executing: [new session: Capabilities [{browserName=chrome, javascriptEnabled=true, chromeOptions={binary=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}, version=41, platform=ANY}]])
+09:15:31.628 INFO - Creating a new session for Capabilities [{browserName=chrome, javascriptEnabled=true, chromeOptions={binary=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}, version=41, platform=ANY}]
+09:15:31.628 INFO - Creating a new session for Capabilities [{browserName=safari, safari.options={skipExtensionInstallation=true}, javascriptEnabled=true, version=8.0.4, platform=ANY}]
+09:15:31.730 INFO - Server started on port 21767
+09:15:31.737 INFO - Launching Safari
+09:15:31.757 INFO - Waiting for SafariDriver to connect
+Starting ChromeDriver 2.14.313457 (3d645c400edf2e2c500566c9aa096063e707c9cf) on port 16347
+Only local connections are allowed.
+09:15:33.798 INFO - Connection opened
+09:15:33.801 INFO - Driver connected in 2043 ms
+09:15:33.872 INFO - Done: [new session: Capabilities [{browserName=safari, safari.options={skipExtensionInstallation=true}, javascriptEnabled=true, version=8.0.4, platform=ANY}]]
+safari 8.0.4             RESPONSE init({"browserName":"safari","version":"8.0.4","safari.options":{"skipExtensionInstallation":true}})
+safari 8.0.4             CALL get("http://localhost:58926/granthapi-tdd/test/client/index.html?cli_browser_id=1")
+safari 8.0.4             POST /session/:sessionID/url {"url":"http://localhost:58926/granthapi-tdd/test/client/index.html?cli_browser_id=1"}
+09:15:33.896 INFO - Executing: [get: http://localhost:58926/granthapi-tdd/test/client/index.html?cli_browser_id=1])
+09:15:34.071 INFO - Done: [new session: Capabilities [{browserName=chrome, javascriptEnabled=true, chromeOptions={binary=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}, version=41, platform=ANY}]]
+chrome 41                RESPONSE init({"browserName":"chrome","version":"41","chromeOptions":{"binary":"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"}})
+chrome 41                CALL get("http://localhost:58926/granthapi-tdd/test/client/index.html?cli_browser_id=0")
+chrome 41                POST /session/:sessionID/url {"url":"http://localhost:58926/granthapi-tdd/test/client/index.html?cli_browser_id=0"}
+09:15:34.093 INFO - Executing: [get: http://localhost:58926/granthapi-tdd/test/client/index.html?cli_browser_id=0])
+GET /granthapi-tdd/test/client/index.html?cli_browser_id=0
+GET /app/webcomponentsjs/webcomponents.min.js
+GET /app/web-component-tester/browser.js
+404 GET /app/webcomponentsjs/webcomponents.min.js
+GET /app/web-component-tester/environment.js
+Test client opened sideband socket
+GET /favicon.ico
+09:15:35.170 INFO - Done: [get: http://localhost:58926/granthapi-tdd/test/client/index.html?cli_browser_id=0]
+chrome 41                RESPONSE get("http://localhost:58926/granthapi-tdd/test/client/index.html?cli_browser_id=0")
+GET /granthapi-tdd/test/client/services/religion-service-tests.html?bust=0.33362126164138317
+chrome 41                Beginning tests via http://localhost:58926/granthapi-tdd/test/client/index.html?cli_browser_id=0
+GET /app/webcomponentsjs/webcomponents.min.js
+GET /app/web-component-tester/browser.js
+404 GET /app/webcomponentsjs/webcomponents.min.js
+GET /app/web-component-tester/environment.js
+GET /app/core-ajax/core-ajax.html
+GET /app/services/religion-service.html
+404 GET /app/core-ajax/core-ajax.html
+404 GET /app/services/religion-service.html
+chrome 41                CALL title()
+chrome 41                GET /session/:sessionID/title
+chrome 41                ✖ services/religion-service-tests.html » <religion-service> » "before all" hook
+
+  undefined is not a function
+    <unknown> at   Context.<anonymous> at /granthapi-tdd/test/client/services/religion-service-tests.html:43:0
+
+09:15:35.417 INFO - Executing: [get title])
+GET /granthapi-tdd/test/client/services/book-service-tests.html?bust=0.34004648262634873
+chrome 41                CALL title()
+chrome 41                GET /session/:sessionID/title
+chrome 41                ✖ services/religion-service-tests.html » <religion-service> » "after all" hook
+
+  undefined is not a function
+    <unknown> at   Context.<anonymous> at /granthapi-tdd/test/client/services/religion-service-tests.html:54:0
+
+GET /app/webcomponentsjs/webcomponents.min.js
+GET /app/web-component-tester/browser.js
+404 GET /app/webcomponentsjs/webcomponents.min.js
+09:15:35.511 INFO - Executing: [get title])
+GET /app/web-component-tester/environment.js
+GET /app/core-ajax/core-ajax.html
+GET /app/services/book-service.html
+404 GET /app/core-ajax/core-ajax.html
+404 GET /app/services/book-service.html
+chrome 41                CALL title()
+chrome 41                GET /session/:sessionID/title
+chrome 41                ✖ services/book-service-tests.html » <book-service> » "before all" hook
+
+  undefined is not a function
+    <unknown> at   Context.<anonymous> at /granthapi-tdd/test/client/services/book-service-tests.html:44:0
+
+09:15:35.595 INFO - Executing: [get title])
+GET /granthapi-tdd/test/client/services/chapter-service-tests.html?bust=0.4569289372302592
+09:15:35.601 INFO - Done: [get title]
+chrome 41                RESPONSE title()
+chrome 41                CALL title()
+chrome 41                GET /session/:sessionID/title
+chrome 41                ✖ services/book-service-tests.html » <book-service> » "after all" hook
+
+  undefined is not a function
+    <unknown> at   Context.<anonymous> at /granthapi-tdd/test/client/services/book-service-tests.html:55:0
+
+GET /app/webcomponentsjs/webcomponents.min.js
+GET /app/web-component-tester/browser.js
+404 GET /app/webcomponentsjs/webcomponents.min.js
+09:15:35.630 INFO - Executing: [get title])
+GET /app/web-component-tester/environment.js
+GET /app/core-ajax/core-ajax.html
+GET /app/services/book-service.html
+GET /app/services/chapter-service.html
+404 GET /app/core-ajax/core-ajax.html
+404 GET /app/services/book-service.html
+404 GET /app/services/chapter-service.html
+chrome 41                CALL title()
+chrome 41                GET /session/:sessionID/title
+chrome 41                ✖ services/chapter-service-tests.html » <chapter-service> » "before all" hook
+
+  undefined is not a function
+    <unknown> at   Context.<anonymous> at /granthapi-tdd/test/client/services/chapter-service-tests.html:53:0
+
+09:15:35.719 INFO - Done: [get title]
+chrome 41                RESPONSE title()
+09:15:35.729 INFO - Executing: [get title])
+chrome 41                CALL title()
+chrome 41                GET /session/:sessionID/title
+chrome 41                ✖ services/chapter-service-tests.html » <chapter-service> » "after all" hook
+
+  undefined is not a function
+    <unknown> at   Context.<anonymous> at /granthapi-tdd/test/client/services/chapter-service-tests.html:61:0
+
+chrome 41                Tests failed: 6 failed tests
+chrome 41                CALL quit()
+chrome 41                DELETE /session/:sessionID
+09:15:35.739 INFO - Executing: [get title])
+09:15:35.745 INFO - Executing: [delete session: bbbf9f30-5b50-4973-a02e-9c0492044af1])
+09:15:35.746 INFO - Done: [get title]
+chrome 41                RESPONSE title()
+09:15:35.751 INFO - Done: [get title]
+chrome 41                RESPONSE title()
+09:15:35.757 INFO - Done: [get title]
+chrome 41                RESPONSE title()
+09:15:35.766 INFO - Done: [get title]
+chrome 41                RESPONSE title()
+09:15:36.495 INFO - Done: [delete session: bbbf9f30-5b50-4973-a02e-9c0492044af1]
+chrome 41                RESPONSE quit()
+chrome 41                BrowserRunner complete
+safari 8.0.4             Tests failed: Interrupting
+safari 8.0.4             CALL quit()
+safari 8.0.4             DELETE /session/:sessionID
+
+Shutting down. Press ctrl-c again to kill immediately.
+09:16:09.374 INFO - Shutting down...
+safari 8.0.4             Error code ECONNRESET: Lost http connection retrying in 15 ms. { [Error: socket hang up] code: 'ECONNRESET' }
+safari 8.0.4             Error code ECONNRESET: Lost http connection retrying in 15 ms. { [Error: socket hang up] code: 'ECONNRESET' }
+safari 8.0.4             Error code ECONNREFUSED: Unexpected error. { [Error: connect ECONNREFUSED]
+  code: 'ECONNREFUSED',
+  errno: 'ECONNREFUSED',
+  syscall: 'connect' }
+safari 8.0.4             Error code ECONNREFUSED: Unexpected error. { [Error: connect ECONNREFUSED]
+  code: 'ECONNREFUSED',
+  errno: 'ECONNREFUSED',
+  syscall: 'connect' }
+safari 8.0.4             Failed to quit: { [Error: [quit()] connect ECONNREFUSED]
+  code: 'ECONNREFUSED',
+  errno: 'ECONNREFUSED',
+  syscall: 'connect' }
