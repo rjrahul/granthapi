@@ -7,9 +7,10 @@
  */
 var request = require('supertest');
 var MongoClient = require("mongodb").MongoClient;
-var Configurer = require("../../lib/Configurer.js")();
-var app = require("../../app.js");
-var configData = require("../../config/config.json")[process.env.NODE_ENV];
+var ObjectID = require("mongodb").ObjectID;
+var Configurer = require("../../../lib/Configurer.js")();
+var app = require("../../../app.js");
+var configData = require("../../../config/config.json")[process.env.NODE_ENV];
 
 describe("ChaptersFT", function () {
     this.timeout(5000);
@@ -60,7 +61,7 @@ describe("ChaptersFT", function () {
                 col.insertMany(chapters, function (err) {
                     if (err) return done(err);
 
-                    books[0].book.content = chapters[0]._id;
+                    books[0].book.content = chapters[0]._id.toString();
                     db.collection(dbSetup.metCol, function (err, col) {
                         col.insertMany(books, function (err) {
                             db.close();
@@ -89,7 +90,7 @@ describe("ChaptersFT", function () {
         };
         expectedResponse.books[0] = JSON.parse(JSON.stringify(books[0].book));
         delete expectedResponse.books[0].content;
-        expectedResponse.books[0].bookId = books[0]._id;
+        expectedResponse.books[0].bookId = books[0]._id.toString();
 
         expectedResponse.books[0].chapters = chapters[0].book.chapters.map(function (chapter, index) {
             var newChapter = {};
@@ -101,20 +102,20 @@ describe("ChaptersFT", function () {
         });
 
         request(app)
-            .get("/religions/" + books[0].religion + "/books/" + books[0]._id + "/chapters")
+            .get("/religions/" + books[0].book.religion + "/books/" + books[0]._id.toString() + "/chapters")
             .expect("Content-Type", /json/)
             .expect(200)
             .expect(expectedResponse, done);
     });
 
-    it("should return contents of only the specified chapter with index", function (done) {
+    it("should return contents of only the specified chapter with index 0", function (done) {
         var requestChapterIndex = 0;
         var expectedResponse = {
             "books": []
         };
         expectedResponse.books[0] = JSON.parse(JSON.stringify(books[0].book));
         delete expectedResponse.books[0].content;
-        expectedResponse.books[0].bookId = books[0]._id;
+        expectedResponse.books[0].bookId = books[0]._id.toString();
 
         expectedResponse.books[0].chapters = [
             {
@@ -128,7 +129,34 @@ describe("ChaptersFT", function () {
         });
 
         request(app)
-            .get("/religions/" + books[0].religion + "/books/" + books[0]._id + "/chapters/" + (requestChapterIndex + 1))
+            .get("/religions/" + books[0].book.religion + "/books/" + books[0]._id.toString() + "/chapters/" + (requestChapterIndex + 1))
+            .expect("Content-Type", /json/)
+            .expect(200)
+            .expect(expectedResponse, done);
+    });
+
+    it("should return contents of only the specified chapter with index 1", function (done) {
+        var requestChapterIndex = 1;
+        var expectedResponse = {
+            "books": []
+        };
+        expectedResponse.books[0] = JSON.parse(JSON.stringify(books[0].book));
+        delete expectedResponse.books[0].content;
+        expectedResponse.books[0].bookId = books[0]._id.toString();
+
+        expectedResponse.books[0].chapters = [
+            {
+                "chapterIndex": requestChapterIndex + 1
+            }
+        ];
+        Object.keys(chapters[0].book.chapters[requestChapterIndex]).forEach(function (key) {
+            var expectedChapter = expectedResponse.books[0].chapters[0];
+            var originalChapter = chapters[0].book.chapters[requestChapterIndex];
+            expectedChapter[key] = originalChapter[key];
+        });
+
+        request(app)
+            .get("/religions/" + books[0].book.religion + "/books/" + books[0]._id.toString() + "/chapters/" + (requestChapterIndex + 1))
             .expect("Content-Type", /json/)
             .expect(200)
             .expect(expectedResponse, done);
@@ -136,7 +164,19 @@ describe("ChaptersFT", function () {
 
     it("should return 404 when chapter index not present in retrieve", function (done) {
         request(app)
-            .get("/religions/" + books[0].religion + "/books/" + books[0]._id + "/chapters/12345")
+            .get("/religions/" + books[0].book.religion + "/books/" + books[0]._id.toString() + "/chapters/12345")
+            .expect(404, done);
+    });
+
+    it("should return 404 when invalid book Id in retrieve", function (done) {
+        request(app)
+            .get("/religions/" + books[0].book.religion + "/books/12345/chapters/12345")
+            .expect(404, done);
+    });
+
+    it("should return 404 when valid but not available book Id in retrieve", function (done) {
+        request(app)
+            .get("/religions/" + books[0].book.religion + "/books/" + (new ObjectID()).toString() + "/chapters/12345")
             .expect(404, done);
     });
 
@@ -147,7 +187,7 @@ describe("ChaptersFT", function () {
         };
         expectedResponse.books[0] = JSON.parse(JSON.stringify(books[0].book));
         delete expectedResponse.books[0].content;
-        expectedResponse.books[0].bookId = books[0]._id;
+        expectedResponse.books[0].bookId = books[0]._id.toString();
 
         expectedResponse.books[0].chapters = [
             {
@@ -158,13 +198,13 @@ describe("ChaptersFT", function () {
         chapters[0].book.chapters[requestChapterIndex].text = "This is updated chapter text";
 
         request(app)
-            .put("/religions/" + books[0].religion + "/books/" + books[0]._id + "/chapters/" + (requestChapterIndex + 1))
+            .put("/religions/" + books[0].book.religion + "/books/" + books[0]._id.toString() + "/chapters/" + (requestChapterIndex + 1))
             .send(expectedResponse.books[0].chapters[0])
             .expect(204)
             .end(function (err) {
                 if (err) return done(err);
                 request(app)
-                    .get("/religions/" + books[0].religion + "/books/" + books[0]._id + "/chapters/" + (requestChapterIndex + 1))
+                    .get("/religions/" + books[0].book.religion + "/books/" + books[0]._id.toString() + "/chapters/" + (requestChapterIndex + 1))
                     .expect("Content-Type", /json/)
                     .expect(200)
                     .expect(expectedResponse, done);
@@ -173,21 +213,24 @@ describe("ChaptersFT", function () {
 
     it("should return 404 when chapter index not present in update", function (done) {
         request(app)
-            .put("/religions/" + books[0].religion + "/books/" + books[0]._id + "/chapters/12345")
+            .put("/religions/" + books[0].book.religion + "/books/" + books[0]._id.toString() + "/chapters/12345")
             .send("{}")
             .expect(404, done);
     });
 
     it("should remove the chapter and its corresponding TOC line from the book", function (done) {
-        var requestChapterIndex = 0;
+        var requestChapterIndex = 1;
         var expectedResponse = {
             "books": []
         };
         expectedResponse.books[0] = JSON.parse(JSON.stringify(books[0].book));
         delete expectedResponse.books[0].content;
-        expectedResponse.books[0].bookId = books[0]._id;
+        expectedResponse.books[0].bookId = books[0]._id.toString();
+        expectedResponse.books[0].toc.splice(requestChapterIndex, 1);
+        books[0].book.toc = expectedResponse.books[0].toc;
+        chapters[0].book.chapters.splice(requestChapterIndex, 1);
 
-        expectedResponse.books[0].chapters = chapters[0].book.chapters.slice(1).map(function (chapter, index) {
+        expectedResponse.books[0].chapters = chapters[0].book.chapters = chapters[0].book.chapters.map(function (chapter, index) {
             var newChapter = {};
             newChapter.chapterIndex = index + 1;
             Object.keys(chapter).forEach(function (key) {
@@ -197,12 +240,37 @@ describe("ChaptersFT", function () {
         });
 
         request(app)
-            .delete("/religions/" + books[0].religion + "/books/" + books[0]._id + "/chapters/" + (requestChapterIndex + 1))
+            .delete("/religions/" + books[0].book.religion + "/books/" + books[0]._id.toString() + "/chapters/" + (requestChapterIndex + 1))
             .expect(204)
             .end(function (err) {
                 if (err) return done(err);
                 request(app)
-                    .get("/religions/" + books[0].religion + "/books/" + books[0]._id)
+                    .get("/religions/" + books[0].book.religion + "/books/" + books[0]._id.toString() + "/chapters")
+                    .expect(200)
+                    .expect(expectedResponse, done);
+            });
+    });
+
+    it("should remove another chapter from the book to make it to 0", function (done) {
+        var requestChapterIndex = 0;
+        var expectedResponse = {
+            "books": []
+        };
+        expectedResponse.books[0] = JSON.parse(JSON.stringify(books[0].book));
+        delete expectedResponse.books[0].content;
+        expectedResponse.books[0].bookId = books[0]._id.toString();
+        expectedResponse.books[0].toc = [""];
+        books[0].book.toc = expectedResponse.books[0].toc;
+
+        expectedResponse.books[0].chapters = chapters[0].book.chapters = [{"chapterIndex": 1, "text": ""}];
+
+        request(app)
+            .delete("/religions/" + books[0].book.religion + "/books/" + books[0]._id.toString() + "/chapters/" + (requestChapterIndex + 1))
+            .expect(204)
+            .end(function (err) {
+                if (err) return done(err);
+                request(app)
+                    .get("/religions/" + books[0].book.religion + "/books/" + books[0]._id.toString() + "/chapters")
                     .expect(200)
                     .expect(expectedResponse, done);
             });
@@ -210,7 +278,7 @@ describe("ChaptersFT", function () {
 
     it("should return 404 when chapter index not present in remove", function (done) {
         request(app)
-            .delete("/religions/" + books[0].religion + "/books/" + books[0]._id + "/chapters/12345")
+            .delete("/religions/" + books[0].book.religion + "/books/" + books[0]._id.toString() + "/chapters/12345")
             .expect(404, done);
     });
 });

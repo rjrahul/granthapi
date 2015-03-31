@@ -1,0 +1,135 @@
+<!--
+    Created by RJ on 3/27/15.
+
+    Tests for services/religion-service.html
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>religion-service tests</title>
+
+    <script src="../../../bower_components/webcomponentsjs/webcomponents.min.js"></script>
+    <script src="../../../bower_components/web-component-tester/browser.js"></script>
+    <link rel="import" href="../../../bower_components/core-ajax/core-ajax.html">
+
+    <link rel="import" href="../../../public/services/religion-service.html">
+</head>
+<body>
+
+<core-ajax id="testSetup"
+           method="get">
+</core-ajax>
+
+<religion-service id="religionService"></religion-service>
+
+<script>
+    var testSetup = document.querySelector("#testSetup");
+    var religionService = document.querySelector("#religionService");
+
+    var baseUrl = location.protocol + "//" + location.host + "/app/tests/setup";
+
+    describe("<religion-service> - empty database", function () {
+        before(function (done) {
+            testSetup.url = baseUrl + "/empty";
+            testSetup.addEventListener("core-response", function (e) {
+                e.target.removeEventListener("core-response", arguments.callee);
+                done();
+            });
+            testSetup.addEventListener("core-error", function () {
+                done(new Error("Setup error"));
+            });
+            testSetup.go();
+        });
+
+        after(function (done) {
+            testSetup.url = baseUrl + "/teardown";
+            testSetup.addEventListener("core-response", function () {
+                done();
+            });
+            testSetup.addEventListener("core-error", function () {
+                done(new Error("Setup error"));
+            });
+            testSetup.go();
+        });
+
+        it("should load no religions", function (done) {
+            religionService.addEventListener("religions-load-complete", function (e) {
+                expect(religionService.religions).to.be.ok;
+                expect(religionService.religions).to.have.length.of(0);
+                e.target.removeEventListener("religions-load-complete", arguments.callee);
+                done();
+            });
+            religionService.loadReligions();
+        });
+    });
+
+    describe("<religion-service>", function () {
+        before(function (done) {
+            testSetup.url = baseUrl;
+            testSetup.addEventListener("core-response", function (e) {
+                e.target.removeEventListener("core-response", arguments.callee);
+                done();
+            });
+            testSetup.addEventListener("core-error", function () {
+                done(new Error("Setup error"));
+            });
+            testSetup.go();
+        });
+
+        after(function (done) {
+            testSetup.url = baseUrl + "/teardown";
+            testSetup.addEventListener("core-response", function () {
+                done();
+            });
+            testSetup.addEventListener("core-error", function () {
+                done(new Error("Setup error"));
+            });
+            testSetup.go();
+        });
+
+        it("should load religions", function (done) {
+            religionService.addEventListener("religions-load-complete", function (e) {
+                expect(religionService.religions).to.be.ok;
+                expect(religionService.religions).to.have.length.of(2);
+                expect(religionService.religions).to.deep.equal([{name: "Jain"}, {name: "Hindu"}]);
+                e.target.removeEventListener("religions-load-complete", arguments.callee);
+                done();
+            });
+            religionService.loadReligions();
+        });
+
+        it("should update religions", function (done) {
+            religionService.addEventListener("religion-update-complete", function (e) {
+                religionService.addEventListener("religions-load-complete", function (e) {
+                    expect(religionService.religions).to.be.ok;
+                    expect(religionService.religions).to.have.length.of(2);
+                    expect(religionService.religions).to.deep.equal([{name: "Jain"}, {name: "Hindu1"}]);
+                    e.target.removeEventListener("religions-load-complete", arguments.callee);
+                    done();
+                });
+                religionService.loadReligions();
+                e.target.removeEventListener("religion-update-complete", arguments.callee);
+            });
+            religionService.updateReligion({"religion": {"oldName": "Hindu", "newName": "Hindu1"}});
+        });
+
+        it("should delete religions", function (done) {
+            religionService.addEventListener("religion-remove-complete", function (e) {
+                religionService.addEventListener("religions-load-complete", function (e) {
+                    expect(religionService.religions).to.be.ok;
+                    expect(religionService.religions).to.have.length.of(1);
+                    expect(religionService.religions).to.deep.equal([{name: "Jain"}]);
+                    e.target.removeEventListener("religions-load-complete", arguments.callee);
+                    done();
+                });
+                religionService.loadReligions();
+                e.target.removeEventListener("religion-remove-complete", arguments.callee);
+            });
+            religionService.removeReligion({"religion": {"name": "Hindu1"}});
+        });
+    });
+</script>
+</body>
+</html>

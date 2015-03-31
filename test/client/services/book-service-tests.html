@@ -1,0 +1,150 @@
+<!--
+    Created by RJ on 3/27/15.
+
+    Tests for services/religion-service.html
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>book-service tests</title>
+
+    <script src="../../../bower_components/webcomponentsjs/webcomponents.min.js"></script>
+    <script src="../../../bower_components/web-component-tester/browser.js"></script>
+    <link rel="import" href="../../../bower_components/core-ajax/core-ajax.html">
+
+    <link rel="import" href="../../../public/services/book-service.html">
+</head>
+<body>
+
+<core-ajax id="testSetup"
+           method="get">
+</core-ajax>
+
+<core-ajax id="getBooks"
+           method="get"
+           handleAs="json">
+</core-ajax>
+
+<book-service id="bookService"></book-service>
+
+<script>
+    var testSetup = document.querySelector("#testSetup");
+    var bookService = document.querySelector("#bookService");
+    var getBooks = document.querySelector("#getBooks");
+
+    var baseUrl = location.protocol + "//" + location.host + "/app/tests/setup";
+
+    describe("<book-service>", function () {
+        var books = [];
+        before(function (done) {
+            testSetup.url = baseUrl;
+            testSetup.addEventListener("core-response", function (e) {
+                e.target.removeEventListener("core-response", arguments.callee);
+                done();
+            });
+            testSetup.addEventListener("core-error", function () {
+                done(new Error("Setup error"));
+            });
+            testSetup.go();
+        });
+
+        after(function (done) {
+            testSetup.url = baseUrl + "/teardown";
+            testSetup.addEventListener("core-response", function () {
+                done();
+            });
+            testSetup.addEventListener("core-error", function () {
+                done(new Error("Setup error"));
+            });
+            testSetup.go();
+        });
+
+        it("should load books", function (done) {
+            bookService.addEventListener("books-load-complete", function (e) {
+                books = bookService.books;
+                expect(bookService.books).to.be.ok;
+                expect(bookService.books).to.have.length.of(3);
+                expect(bookService.books).to.have.deep.property("[0].religion", "Jain");
+                expect(bookService.books).to.have.deep.property("[1].religion", "Jain");
+                expect(bookService.books).to.have.deep.property("[2].religion", "Jain");
+                e.target.removeEventListener("books-load-complete", arguments.callee);
+                done();
+            });
+            bookService.loadBooks({"religion": {"name": "Jain"}});
+        });
+
+        it("should update book meta data", function (done) {
+            bookService.addEventListener("book-update-complete", function (e) {
+                getBooks.url = location.protocol + "//" + location.host + "/religions/" + books[0].religion + "/books/" + books[0].bookId;
+                getBooks.addEventListener("core-response", function (e) {
+                    expect(getBooks.response.books).to.be.ok;
+                    expect(getBooks.response.books).to.have.length.of(1);
+                    expect(getBooks.response.books).to.have.deep.property("[0].author", "Changed Author");
+                    expect(getBooks.response.books).to.have.deep.property("[0].title", "Changed Title");
+                    e.target.removeEventListener("core-response", arguments.callee);
+                    done();
+                });
+                getBooks.go();
+                e.target.removeEventListener("book-update-complete", arguments.callee);
+            });
+            bookService.updateBook({
+                "book": {
+                    "bookId": books[0].bookId,
+                    "religion": books[0].religion,
+                    "author": "Changed Author",
+                    "title": "Changed Title"
+                }
+            });
+        });
+
+        it("should add a new book", function (done) {
+            bookService.addEventListener("book-add-complete", function (e) {
+                expect(e.detail.book.bookId).to.be.ok;
+                getBooks.url = location.protocol + "//" + location.host + "/religions/Jain/books/" + e.detail.book.bookId;
+                getBooks.addEventListener("core-response", function (e) {
+                    expect(getBooks.response.books).to.be.ok;
+                    expect(getBooks.response.books).to.have.length.of(1);
+                    expect(getBooks.response.books).to.have.deep.property("[0].bookId");
+                    expect(getBooks.response.books).to.have.deep.property("[0].author", "New Author");
+                    expect(getBooks.response.books).to.have.deep.property("[0].title", "New Title");
+                    expect(getBooks.response.books).to.have.deep.property("[0].language", "hi");
+                    expect(getBooks.response.books).to.have.deep.property("[0].published", "2015-03-30");
+                    expect(getBooks.response.books).to.have.deep.property("[0].toc").to.have.length.of(2).that.deep.equals(["TOC1", "TOC2"]);
+                    e.target.removeEventListener("core-response", arguments.callee);
+                    done();
+                });
+                getBooks.go();
+                e.target.removeEventListener("book-add-complete", arguments.callee);
+            });
+            bookService.addBook({
+                "book": {
+                    "religion": "Jain",
+                    "author": "New Author",
+                    "title": "New Title",
+                    "language": "hi",
+                    "published": "2015-03-30",
+                    "toc": ["TOC1", "TOC2"]
+                }
+            });
+        });
+
+        // NOTE: Keep this test as last because the local state of books object goes out of sync after this
+        it("should delete book", function (done) {
+            bookService.addEventListener("book-remove-complete", function (e) {
+                getBooks.url = location.protocol + "//" + location.host + "/religions/" + books[0].religion + "/books/" + books[0].bookId;
+                getBooks.addEventListener("core-error", function (e) {
+                    expect(e.detail.response.statusCode).to.equal(404);
+                    e.target.removeEventListener("core-error", arguments.callee);
+                    done();
+                });
+                getBooks.go();
+                e.target.removeEventListener("book-remove-complete", arguments.callee);
+            });
+            bookService.removeBook({"book": {"bookId": books[0].bookId, "religion": books[0].religion}});
+        });
+    });
+</script>
+</body>
+</html>

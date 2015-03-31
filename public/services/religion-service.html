@@ -1,0 +1,74 @@
+<!--
+    Created by RJ on 3/27/15.
+
+    Service to provide religion operations on API
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../core-ajax/core-ajax.html">
+
+<polymer-element name="religion-service" attributes="religions">
+    <template>
+        <style>
+            :host {
+                display: none;
+            }
+        </style>
+
+        <core-ajax id="getReligions"
+                   method="get"
+                   on-core-response="{{religionsLoaded}}"
+                   on-core-error="{{handleError}}"
+                   handleAs="json">
+        </core-ajax>
+
+        <core-ajax id="putReligion"
+                   method="put" ,
+                   contentType="application/json" ,
+                   on-core-response="{{religionUpdated}}"
+                   on-core-error="{{handleError}}">
+        </core-ajax>
+
+        <core-ajax id="removeReligion"
+                   method="delete" ,
+                   contentType="application/json" ,
+                   on-core-response="{{religionRemoved}}"
+                   on-core-error="{{handleError}}">
+        </core-ajax>
+    </template>
+    <script>
+        Polymer("religion-service", {
+            baseUrl: location.protocol + "//" + location.host + "/religions",
+            created: function () {
+                this.religions = [];
+            },
+            loadReligions: function () {
+                this.$.getReligions.url = this.baseUrl;
+                this.$.getReligions.go();
+            },
+            religionsLoaded: function () {
+                this.religions = this.$.getReligions.response.religions;
+                this.fire("religions-load-complete");
+            },
+            updateReligion: function (obj) {
+                this.$.putReligion.url = this.baseUrl + "/" + obj.religion.oldName;
+                this.$.putReligion.body = '{"name": "' + obj.religion.newName + '"}';
+                this.$.putReligion.go();
+            },
+            religionUpdated: function () {
+                this.fire("religion-update-complete");
+            },
+            removeReligion: function (obj) {
+                this.$.removeReligion.url = this.baseUrl + "/" + obj.religion.name;
+                this.$.removeReligion.go();
+            },
+            religionRemoved: function () {
+                this.fire("religion-remove-complete");
+            },
+            handleError: function (e) {
+                var response = e.detail['response'];
+                this.fire('religion-service-error', {response: response});
+                console.log(response);
+            }
+        });
+    </script>
+</polymer-element>

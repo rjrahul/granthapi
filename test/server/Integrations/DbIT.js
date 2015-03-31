@@ -5,8 +5,8 @@
  * Contains integration tests performed on mongo connection utility
  */
 var expect = require("chai").expect;
-var Db = require("../../lib/Db.js");
-var Configurer = require("../../lib/Configurer.js")();
+var Db = require("../../../lib/Db.js");
+var Configurer = require("../../../lib/Configurer.js")();
 var fs = require("fs");
 var MongoClient = require("mongodb").MongoClient;
 
@@ -45,7 +45,10 @@ describe("DatabaseIT", function () {
             if (err) return done(err);
 
             db.collection(dbSetup.metCol, function (err, col) {
-                col.insert([{a: 1, b: 1}, {a: 1, b: {c: "a"}}, {a: 2, b: 2}, {a: 3, b: {c: "b"}}, {a: 4, b: {c: "c"}}]);
+                col.insert([{a: 1, b: 1}, {a: 1, b: {c: "a"}}, {a: 2, b: 2}, {a: 3, b: {c: "b"}}, {
+                    a: 4,
+                    b: {c: "c"}
+                }, {a: 5, b: ["1", "2", "3"]}]);
                 db.close();
                 done();
             });
@@ -187,6 +190,7 @@ describe("DatabaseIT", function () {
 
     describe("#distinct", function () {
         it("should return distinct values from collection", function (done) {
+            this.timeout(4000);
             var db = new Db(configFile);
             var params = {
                 "collection": dbSetup.metCol,
@@ -194,7 +198,7 @@ describe("DatabaseIT", function () {
             };
             db.distinct(params, function (err, result) {
                 expect(err).to.be.not.ok;
-                expect(result).to.deep.equal([1, 2, 3, 4]);
+                expect(result).to.deep.equal([1, 2, 3, 4, 5]);
                 done();
             });
         });
@@ -208,6 +212,19 @@ describe("DatabaseIT", function () {
             db.distinct(params, function (err, result) {
                 expect(err).to.be.not.ok;
                 expect(result).to.deep.equal(["a", "b", "c"]);
+                done();
+            });
+        });
+
+        it("should return error for invalid collection", function (done) {
+            var db = new Db(configFile);
+            var params = {
+                "collection": "invalid",
+                "field": "b.c"
+            };
+            db.distinct(params, function (err, result) {
+                expect(err).to.be.ok;
+                expect(result).to.be.not.ok;
                 done();
             });
         });
@@ -261,6 +278,67 @@ describe("DatabaseIT", function () {
                 done();
             });
         });
+
+        it("should return error for invalid collection", function (done) {
+            var db = new Db(configFile);
+            var params = {
+                "collection": "invalid",
+                "query": {
+                    "b.c": "b"
+                }
+            };
+            db.find(params, function (err, result) {
+                expect(err).to.be.ok;
+                expect(result).to.be.not.ok;
+                done();
+            });
+        });
+    });
+
+    describe("#project", function () {
+        it("should execute projection on the documents after search from database", function (done) {
+            var db = new Db(configFile);
+            var params = {
+                "collection": dbSetup.metCol,
+                "query": {
+                    "a": 5
+                },
+                "project": {
+                    "b": {
+                        "$slice": [1, 1]
+                    }
+                }
+            };
+            db.project(params, function (err, result) {
+                expect(err).to.be.not.ok;
+                expect(result).to.have.length.of.at.least(1);
+                result.forEach(function (doc) {
+                    expect(doc).to.have.a.property("a", 5);
+                    expect(doc).to.have.a.deep.property("b[0]", '2');
+                });
+                done();
+            });
+        });
+
+        it("should return error for invalid collection", function (done) {
+            var db = new Db(configFile);
+            var params = {
+                "collection": "invalid",
+                "query": {
+                    "a": 5
+                },
+                "project": {
+                    "b": {
+                        "$slice": [1, 1]
+                    }
+                }
+            };
+            db.project(params, function (err, result) {
+                expect(err).to.be.ok;
+                expect(result).to.be.not.ok;
+                done();
+            });
+        });
     });
 
     describe("#post", function () {
@@ -292,6 +370,24 @@ describe("DatabaseIT", function () {
                         });
                     });
                 });
+            });
+        });
+
+        it("should return error for invalid collection", function (done) {
+            var db = new Db(configFile);
+            var params = {
+                "collection": "invalid",
+                "insert": {
+                    "a": 6,
+                    "b": {
+                        "c": "d"
+                    }
+                }
+            };
+            db.insert(params, function (err, result) {
+                expect(err).to.be.ok;
+                expect(result).to.be.not.ok;
+                done();
             });
         });
     });
@@ -332,6 +428,26 @@ describe("DatabaseIT", function () {
                 });
             });
         });
+
+        it("should return error for invalid collection", function (done) {
+            var db = new Db(configFile);
+            var params = {
+                "collection": "invalid",
+                "update": {
+                    "b": {
+                        "c": "f"
+                    }
+                },
+                "query": {
+                    "a": 7
+                }
+            };
+            db.update(params, function (err, result) {
+                expect(err).to.be.ok;
+                expect(result).to.be.not.ok;
+                done();
+            });
+        });
     });
 
     describe("#remove", function () {
@@ -356,7 +472,7 @@ describe("DatabaseIT", function () {
                 db.insert(params, function (err, result) {
                     expect(err).to.be.not.ok;
                     expect(result).to.be.ok;
-                    db.delete(params, function (err, result) {
+                    db.remove(params, function (err, result) {
                         expect(err).to.be.not.ok;
                         expect(result).to.be.ok;
                         db.find(params, function (err, result) {
@@ -365,6 +481,154 @@ describe("DatabaseIT", function () {
                         });
                     });
                 });
+            });
+        });
+
+        it("should return error for invalid collection", function (done) {
+            var db = new Db(configFile);
+            var params = {
+                "collection": "invalid",
+                "remove": {
+                    "b": {
+                        "c": "g"
+                    }
+                }
+            };
+            db.remove(params, function (err, result) {
+                expect(err).to.be.ok;
+                expect(result).to.be.not.ok;
+                done();
+            });
+        });
+    });
+
+    describe("error conditions on incorrect db", function () {
+        var configDir = "./testc";
+        var configFile = configDir + "/testconfig.json";
+        before("setup config directory", function () {
+            if (!fs.existsSync(configDir)) {
+                fs.mkdirSync(configDir);
+            }
+            if (!fs.existsSync(configFile)) {
+                fs.writeFileSync(configFile, JSON.stringify({
+                    mongodbHost: "localhost",
+                    mongodbPort: "27017",
+                    mongodbUsername: "invalid",
+                    mongodbPassword: "invalid"
+                }));
+            }
+        });
+
+        after("clean up config directory", function () {
+            fs.unlinkSync(configFile);
+            fs.rmdirSync(configDir);
+        });
+
+        it("should throw error on distinct for no databasen", function (done) {
+            var db = new Db(configFile);
+            var params = {
+                "collection": dbSetup.metCol,
+                "field": "b.c"
+            };
+            db.distinct(params, function (err, result) {
+                expect(err).to.be.ok;
+                expect(result).to.be.not.ok;
+                done();
+            });
+        });
+
+        it("should throw error on find for no database", function (done) {
+            var db = new Db(configFile);
+            var params = {
+                "collection": dbSetup.metCol,
+                "query": {
+                    "a": 5
+                },
+                "project": {
+                    "b": {
+                        "$slice": [1, 1]
+                    }
+                }
+            };
+            db.find(params, function (err, result) {
+                expect(err).to.be.ok;
+                expect(result).to.be.not.ok;
+                done();
+            });
+        });
+
+        it("should throw error on project for no database", function (done) {
+            var db = new Db(configFile);
+            var params = {
+                "collection": dbSetup.metCol,
+                "query": {
+                    "a": 5
+                },
+                "project": {
+                    "b": {
+                        "$slice": [1, 1]
+                    }
+                }
+            };
+            db.project(params, function (err, result) {
+                expect(err).to.be.ok;
+                expect(result).to.be.not.ok;
+                done();
+            });
+        });
+
+        it("should throw error on insert for no database", function (done) {
+            var db = new Db(configFile);
+            var params = {
+                "collection": dbSetup.metCol,
+                "insert": {
+                    "a": 6,
+                    "b": {
+                        "c": "d"
+                    }
+                }
+            };
+            db.insert(params, function (err, result) {
+                expect(err).to.be.ok;
+                expect(result).to.be.not.ok;
+                done();
+            });
+        });
+
+        it("should throw error on update for no database", function (done) {
+            var db = new Db(configFile);
+            var params = {
+                "collection": dbSetup.metCol,
+                "update": {
+                    "b": {
+                        "c": "f"
+                    }
+                },
+                "query": {
+                    "a": 7
+                }
+            };
+            db.update(params, function (err, result) {
+                expect(err).to.be.ok;
+                expect(result).to.be.not.ok;
+                done();
+            });
+        });
+
+        it("should throw error on remove for no database", function (done) {
+            var db = new Db(configFile);
+            var params = {
+                "collection": dbSetup.metCol,
+                "remove": {
+                    "b": {
+                        "c": "g"
+                    }
+                }
+            };
+            db.remove(params, function (err, result) {
+                expect(err).to.be.ok;
+                expect(result).to.be.not.ok;
+                done();
             });
         });
     });

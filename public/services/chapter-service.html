@@ -1,0 +1,74 @@
+<!--
+    Created by RJ on 3/27/15.
+
+    Service to provide book operations on API
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../core-ajax/core-ajax.html">
+
+<polymer-element name="chapter-service" attributes="book">
+    <template>
+        <style>
+            :host {
+                display: none;
+            }
+        </style>
+
+        <core-ajax id="getChapters"
+                   method="get"
+                   on-core-response="{{chaptersLoaded}}"
+                   on-core-error="{{handleError}}"
+                   handleAs="json">
+        </core-ajax>
+
+        <core-ajax id="putChapter"
+                   method="put" ,
+                   contentType="application/json" ,
+                   on-core-response="{{chapterUpdated}}"
+                   on-core-error="{{handleError}}">
+        </core-ajax>
+
+        <core-ajax id="removeChapter"
+                   method="delete" ,
+                   contentType="application/json" ,
+                   on-core-response="{{chapterRemoved}}"
+                   on-core-error="{{handleError}}">
+        </core-ajax>
+    </template>
+    <script>
+        Polymer("chapter-service", {
+            baseUrl: location.protocol + "//" + location.host + "/religions",
+            created: function () {
+                this.book = {};
+            },
+            loadChapters: function (obj) {
+                this.$.getChapters.url = this.baseUrl + "/" + obj.book.religion + "/books/" + obj.book.bookId + "/chapters/" + obj.book.chapters[0].chapterIndex;
+                this.$.getChapters.go();
+            },
+            chaptersLoaded: function () {
+                this.book = this.$.getChapters.response.books[0];
+                this.fire("chapters-load-complete");
+            },
+            updateChapter: function (obj) {
+                this.$.putChapter.url = this.baseUrl + "/" + obj.book.religion + "/books/" + obj.book.bookId + "/chapters/" + obj.book.chapters[0].chapterIndex;
+                this.$.putChapter.body = JSON.stringify(obj.book.chapters[0]);
+                this.$.putChapter.go();
+            },
+            chapterUpdated: function () {
+                this.fire("chapter-update-complete");
+            },
+            removeChapter: function (obj) {
+                this.$.removeChapter.url = this.baseUrl + "/" + obj.book.religion + "/books/" + obj.book.bookId + "/chapters/" + obj.book.chapters[0].chapterIndex;
+                this.$.removeChapter.go();
+            },
+            chapterRemoved: function () {
+                this.fire("chapter-remove-complete");
+            },
+            handleError: function (e) {
+                var response = e.detail['response'];
+                this.fire('chapter-service-error', {response: response});
+                console.log(response);
+            }
+        });
+    </script>
+</polymer-element>

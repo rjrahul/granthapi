@@ -4,9 +4,9 @@
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug')('granthapi-tdd:server');
+var app = require('../app.js');
 var http = require('http');
+var debug = require('debug');
 
 /**
  * Get port from environment and store in Express.
@@ -27,7 +27,6 @@ var server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
-
 server.listen(port, host);
 server.on('error', onError);
 server.on('listening', onListening);

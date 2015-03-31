@@ -7,9 +7,9 @@
  */
 var request = require('supertest');
 var MongoClient = require("mongodb").MongoClient;
-var Configurer = require("../../lib/Configurer.js")();
-var app = require("../../app.js");
-var configData = require("../../config/config.json")[process.env.NODE_ENV];
+var Configurer = require("../../../lib/Configurer.js")();
+var app = require("../../../app.js");
+var configData = require("../../../config/config.json")[process.env.NODE_ENV];
 var expect = require("chai").expect;
 
 describe("BooksFT", function () {
@@ -99,12 +99,15 @@ describe("BooksFT", function () {
         MongoClient.connect(dbSetup.dbUrl, function (err, db) {
             if (err) return done(err);
 
-            db.collection(dbSetup.metCol, function (err, col) {
-                col.insertMany(books, function (err, result) {
-                    db.close();
-                    done(err);
+            db.createCollection(dbSetup.conCol, function (err, col) {
+                if (err) return done(err);
+                db.collection(dbSetup.metCol, function (err, col) {
+                    col.insertMany(books, function (err, result) {
+                        db.close();
+                        done(err);
+                    });
                 });
-            });
+            })
         });
     });
 
@@ -126,10 +129,10 @@ describe("BooksFT", function () {
         };
 
         expectedResponse.books = books.filter(function (book) {
-            return (book.book.religion === religion);
+            return (book.book.religion === requestReligion);
         }).map(function (book) {
             var newBook = {};
-            newBook.bookId = book._id;
+            newBook.bookId = book._id.toString();
             Object.keys(book.book).forEach(function (key) {
                 if (key !== 'content') newBook[key] = book.book[key];
             });
@@ -150,10 +153,10 @@ describe("BooksFT", function () {
         };
 
         expectedResponse.books = books.filter(function (book) {
-            return (book.book.religion === religion);
+            return (book.book.religion === requestReligion);
         }).map(function (book) {
             var newBook = {};
-            newBook.bookId = book._id;
+            newBook.bookId = book._id.toString();
             Object.keys(book.book).forEach(function (key) {
                 if (key !== 'content') newBook[key] = book.book[key];
             });
@@ -181,7 +184,6 @@ describe("BooksFT", function () {
         request(app)
             .post("/religions/Hindu/books")
             .send(book)
-            .expect("Content-Type", /json/)
             .expect(201)
             .end(function (err, res) {
                 if (err) return done(err);
@@ -190,17 +192,21 @@ describe("BooksFT", function () {
                     expect(res.body).to.have.a.property(key, book[key]);
                 });
                 expect(res.body).to.have.a.property("bookId");
-                expect(res.body).to.have.a.property("toc", [""]);
-                expect(res.body).to.have.a.proeprty("religion", "Hindu");
+                expect(res.body).to.have.a.property("religion", "Hindu");
+                expect(res.body).to.have.a.property("toc").that.is.an("array").with.deep.property("[0]").to.equal("");
 
-                //TODO: change based on chapters response
                 var expectedChapterResponse = {
-                    "chapters": [
-                        {
-                            "content": ""
-                        }
-                    ]
+                    "books": [JSON.parse(JSON.stringify(book))]
                 };
+                expectedChapterResponse.books[0].bookId = res.body.bookId;
+                expectedChapterResponse.books[0].toc = res.body.toc;
+                expectedChapterResponse.books[0].religion = res.body.religion;
+                expectedChapterResponse.books[0].chapters = [
+                    {
+                        "chapterIndex": 1,
+                        "text": ""
+                    }
+                ];
 
                 request(app)
                     .get("/religions/Hindu/books/" + res.body.bookId + "/chapters")
@@ -210,15 +216,16 @@ describe("BooksFT", function () {
     });
 
     it("should return only one specific book with same id without the content", function (done) {
+        var requestBook = 0;
         var expectedResponse = {
             "books": []
         };
-        expectedResponse.books[0] = JSON.parse(JSON.stringify(books[0].book));
+        expectedResponse.books[0] = JSON.parse(JSON.stringify(books[requestBook].book));
         delete expectedResponse.books[0].content;
-        expectedResponse.books[0].bookId = books[0]._id;
+        expectedResponse.books[0].bookId = books[requestBook]._id.toString();
 
         request(app)
-            .get("/religions/" + books[0].religion + "/books/" + books[0]._id)
+            .get("/religions/" + books[requestBook].book.religion + "/books/" + books[requestBook]._id.toString())
             .expect("Content-Type", /json/)
             .expect(200)
             .expect(expectedResponse, done);
@@ -226,29 +233,29 @@ describe("BooksFT", function () {
 
     it("should return 404 when incorrect title id is used for retrieve", function (done) {
         request(app)
-            .get("/religions/" + books[0].religion + "/books/12345")
+            .get("/religions/" + books[0].book.religion + "/books/12345")
             .expect(404, done);
     });
 
     it("should update the attributes of the book for provided id", function (done) {
+        var requestBook = 0;
         var expectedResponse = {
             "books": []
         };
-        expectedResponse.books[0] = JSON.parse(JSON.stringify(books[0].book));
+        expectedResponse.books[0] = JSON.parse(JSON.stringify(books[requestBook].book));
         delete expectedResponse.books[0].content;
 
-        books[0].book.title = expectedResponse.title = "Changed title";
-        books[0].book.author = expectedResponse.author = "Changed author";
+        books[requestBook].book.title = expectedResponse.books[0].title = "Changed title";
+        books[requestBook].book.author = expectedResponse.books[0].author = "Changed author";
 
         request(app)
-            .put("/religions/" + books[0].religion + "/books/" + books[0]._id)
+            .put("/religions/" + books[requestBook].book.religion + "/books/" + books[requestBook]._id.toString())
             .send(expectedResponse.books[0])
-            .expect("Content-Type", /json/)
             .expect(204)
             .end(function (err, res) {
                 if (err) return done(err);
 
-                expectedResponse.books[0].bookId = books[0]._id;
+                expectedResponse.books[0].bookId = books[requestBook]._id.toString();
                 request(app)
                     .get("/religions/" + expectedResponse.books[0].religion + "/books/" + expectedResponse.books[0].bookId)
                     .expect(200)
@@ -258,31 +265,33 @@ describe("BooksFT", function () {
 
     it("should return 404 when incorrect title id is used for update", function (done) {
         request(app)
-            .put("/religions/" + books[0].religion + "/books/12345")
+            .put("/religions/" + books[0].book.religion + "/books/12345")
             .send("{}")
             .expect(404, done);
     });
 
     it("should remove the book and its content", function (done) {
+        var requestBook = 0;
         request(app)
-            .delete("/religions/" + books[0].religion + "/books/" + books[0]._id)
+            .delete("/religions/" + books[requestBook].book.religion + "/books/" + books[requestBook]._id.toString())
             .expect(204)
             .end(function (err, res) {
                 if (err) return done(err);
 
                 request(app)
-                    .get("/religions/" + books[0].religion + "/books/" + books[0]._id)
+                    .get("/religions/" + books[requestBook].book.religion + "/books/" + books[requestBook]._id.toString())
                     .expect(404)
                     .end(function (err, res) {
                         if (err) return done(err);
-                        books.splice(0, 1);
+                        books.splice(requestBook, 1);
+                        done();
                     });
             });
     });
 
     it("should return 404 when incorrect title id is used for remove", function (done) {
         request(app)
-            .delete("/religions/" + books[0].religion + "/books/12345")
+            .delete("/religions/" + books[0].book.religion + "/books/12345")
             .expect(404, done);
     });
 });

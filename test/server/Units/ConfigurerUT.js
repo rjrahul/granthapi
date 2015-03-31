@@ -5,7 +5,7 @@
  * Contains integration tests performed on configuration loader
  */
 var expect = require("chai").expect;
-var Configurer = require("../../lib/Configurer.js")();
+var Configurer = require("../../../lib/Configurer.js")();
 
 describe("ConfigurationUT", function () {
     describe.skip("#createMongoDbUrl", function () {
@@ -108,6 +108,22 @@ describe("ConfigurationUT", function () {
                 expect(configuration).to.have.a.property("mongodbPassword", "");
                 expect(configuration).to.have.a.property("mongodbDatabase", "");
                 expect(configuration).to.have.a.property("mongodbUrl", "mongodb://localhost:27017/");
+            });
+
+            it("should have mongodb properties populated with a URL formed (invalid URL)", function () {
+                var conf = {
+                    "mongodbUsername": "user",
+                    "mongodbPassword": "password",
+                    "mongodbDatabase": "db"
+                };
+                var configuration = Configurer.useConfiguration(conf);
+                expect(configuration).to.be.ok;
+                expect(configuration).to.have.a.property("mongodbHost", "");
+                expect(configuration).to.have.a.property("mongodbPort", "");
+                expect(configuration).to.have.a.property("mongodbUsername", "user");
+                expect(configuration).to.have.a.property("mongodbPassword", "password");
+                expect(configuration).to.have.a.property("mongodbDatabase", "db");
+                expect(configuration).to.have.a.property("mongodbUrl", "mongodb://user:password@:/db");
             });
         });
     });

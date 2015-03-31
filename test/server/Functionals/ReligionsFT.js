@@ -6,10 +6,53 @@
  */
 var request = require('supertest');
 var MongoClient = require("mongodb").MongoClient;
-var Configurer = require("../../lib/Configurer.js")();
-var app = require("../../app.js");
-var configData = require("../../config/config.json")[process.env.NODE_ENV];
+var Configurer = require("../../../lib/Configurer.js")();
+var app = require("../../../app.js");
+var configData = require("../../../config/config.json")[process.env.NODE_ENV];
 var expect = require("chai").expect;
+
+describe("ReligionsFT - empty db", function () {
+    this.timeout(5000);
+    var dbSetup = {
+        metCol: configData.metCol,
+        conCol: configData.conCol,
+        dbUrl: ""
+    };
+
+    before("setup functional testing for Religions - empty DB", function (done) {
+        dbSetup.dbUrl = Configurer.useConfiguration(configData).mongodbUrl;
+        MongoClient.connect(dbSetup.dbUrl, function (err, db) {
+            if (err) return done(err);
+
+            db.createCollection(dbSetup.metCol, function (err) {
+                db.close();
+                done(err);
+            });
+        });
+    });
+
+    after("teardown functional setup after religions - empty db", function (done) {
+        MongoClient.connect(dbSetup.dbUrl, function (err, db) {
+            if (err) return done(err);
+            db.dropDatabase(function (err) {
+                db.close();
+                done(err);
+            });
+        });
+    });
+
+    it("should return set of distinct religions", function (done) {
+        var expectedBody = {
+            "religions": []
+        };
+
+        request(app)
+            .get("/religions")
+            .expect("Content-Type", /json/)
+            .expect(200)
+            .expect(expectedBody, done);
+    });
+});
 
 describe("ReligionsFT", function () {
     this.timeout(5000);

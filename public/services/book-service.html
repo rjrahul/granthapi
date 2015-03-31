@@ -1,0 +1,91 @@
+<!--
+    Created by RJ on 3/27/15.
+
+    Service to provide book operations on API
+-->
+<script src="../config/config.json"></script>
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../core-ajax/core-ajax.html">
+
+<polymer-element name="book-service" attributes="books">
+    <template>
+        <style>
+            :host {
+                display: none;
+            }
+        </style>
+
+        <core-ajax id="getBooks"
+                   method="get"
+                   on-core-response="{{booksLoaded}}"
+                   on-core-error="{{handleError}}"
+                   handleAs="json">
+        </core-ajax>
+
+        <core-ajax id="postBook"
+                   method="post" ,
+                   contentType="application/json" ,
+                   handleAs="json" ,
+                   on-core-response="{{bookAdded}}"
+                   on-core-error="{{handleError}}">
+        </core-ajax>
+
+        <core-ajax id="putBook"
+                   method="put" ,
+                   contentType="application/json" ,
+                   on-core-response="{{bookUpdated}}"
+                   on-core-error="{{handleError}}">
+        </core-ajax>
+
+        <core-ajax id="removeBook"
+                   method="delete" ,
+                   contentType="application/json" ,
+                   on-core-response="{{bookRemoved}}"
+                   on-core-error="{{handleError}}">
+        </core-ajax>
+    </template>
+    <script>
+        Polymer("book-service", {
+            baseUrl: location.protocol + "//" + location.host + "/religions",
+            created: function () {
+                this.books = [];
+            },
+            loadBooks: function (obj) {
+                this.$.getBooks.url = this.baseUrl + "/" + obj.religion.name + "/books";
+                this.$.getBooks.go();
+            },
+            booksLoaded: function () {
+                this.books = this.$.getBooks.response.books;
+                this.fire("books-load-complete");
+            },
+            updateBook: function (obj) {
+                this.$.putBook.url = this.baseUrl + "/" + obj.book.religion + "/books/" + obj.book.bookId;
+                this.$.putBook.body = JSON.stringify(obj.book);
+                this.$.putBook.go();
+            },
+            bookUpdated: function () {
+                this.fire("book-update-complete");
+            },
+            addBook: function (obj) {
+                this.$.postBook.url = this.baseUrl + "/" + obj.book.religion + "/books";
+                this.$.postBook.body = JSON.stringify(obj.book);
+                this.$.postBook.go();
+            },
+            bookAdded: function () {
+                this.fire("book-add-complete", {"book": this.$.postBook.response});
+            },
+            removeBook: function (obj) {
+                this.$.removeBook.url = this.baseUrl + "/" + obj.book.religion + "/books/" + obj.book.bookId;
+                this.$.removeBook.go();
+            },
+            bookRemoved: function () {
+                this.fire("book-remove-complete");
+            },
+            handleError: function (e) {
+                var response = e.detail['response'];
+                this.fire('book-service-error', {response: response});
+                console.log(response);
+            }
+        });
+    </script>
+</polymer-element>

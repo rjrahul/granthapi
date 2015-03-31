@@ -1,0 +1,161 @@
+<!--
+    Created by RJ on 3/27/15.
+
+    Tests for services/religion-service.html
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>chapter-service tests</title>
+
+    <script src="../../../bower_components/webcomponentsjs/webcomponents.min.js"></script>
+    <script src="../../../bower_components/web-component-tester/browser.js"></script>
+    <link rel="import" href="../../../bower_components/core-ajax/core-ajax.html">
+
+    <link rel="import" href="../../../public/services/book-service.html">
+    <link rel="import" href="../../../public/services/chapter-service.html">
+</head>
+<body>
+
+<core-ajax id="testSetup"
+           method="get">
+</core-ajax>
+
+<core-ajax id="getChapters"
+           method="get"
+           handleAs="json">
+</core-ajax>
+
+<book-service id="bookService"></book-service>
+<chapter-service id="chapterService"></chapter-service>
+
+<script>
+    var testSetup = document.querySelector("#testSetup");
+    var bookService = document.querySelector("#bookService");
+    var chapterService = document.querySelector("#chapterService");
+    var getChapters = document.querySelector("#getChapters");
+
+    var baseUrl = location.protocol + "//" + location.host + "/app/tests/setup";
+
+    describe("<chapter-service>", function () {
+        var books = [];
+        before(function (done) {
+            testSetup.url = baseUrl;
+            testSetup.addEventListener("core-response", function (e) {
+                bookService.addEventListener("books-load-complete", function (e) {
+                    books = bookService.books;
+                    e.target.removeEventListener("books-load-complete", arguments.callee);
+                    done();
+                });
+                bookService.loadBooks({"religion": {"name": "Jain"}});
+                e.target.removeEventListener("core-response", arguments.callee);
+            });
+            testSetup.addEventListener("core-error", function () {
+                done(new Error("Setup error"));
+            });
+            testSetup.go();
+        });
+
+        after(function (done) {
+            testSetup.url = baseUrl + "/teardown";
+            testSetup.addEventListener("core-response", function () {
+                done();
+            });
+            testSetup.go();
+        });
+
+        it("should load chapter at index 1", function (done) {
+            chapterService.addEventListener("chapters-load-complete", function (e) {
+                expect(chapterService.book).to.be.ok;
+                expect(chapterService.book.chapters).to.be.ok;
+                expect(chapterService.book.chapters).to.have.length.of(1);
+                expect(chapterService.book.chapters).to.have.deep.property("[0].chapterIndex", "1");
+                expect(chapterService.book.chapters).to.have.deep.property("[0].text", "This is first chapter text");
+                e.target.removeEventListener("chapters-load-complete", arguments.callee);
+                done();
+            });
+            chapterService.loadChapters({
+                "book": {
+                    "bookId": books[0].bookId,
+                    "religion": books[0].religion,
+                    "chapters": [{"chapterIndex": "1"}]
+                }
+            });
+        });
+
+        it("should load chapter at index 2", function (done) {
+            chapterService.addEventListener("chapters-load-complete", function (e) {
+                expect(chapterService.book).to.be.ok;
+                expect(chapterService.book.chapters).to.be.ok;
+                expect(chapterService.book.chapters).to.have.length.of(1);
+                expect(chapterService.book.chapters).to.have.deep.property("[0].chapterIndex", "2");
+                expect(chapterService.book.chapters).to.have.deep.property("[0].text", "This is second chapter text");
+                e.target.removeEventListener("chapters-load-complete", arguments.callee);
+                done();
+            });
+            chapterService.loadChapters({
+                "book": {
+                    "bookId": books[0].bookId,
+                    "religion": books[0].religion,
+                    "chapters": [{"chapterIndex": "2"}]
+                }
+            });
+        });
+
+        it("should update chapters content", function (done) {
+            chapterService.addEventListener("chapter-update-complete", function (e) {
+                chapterService.addEventListener("chapters-load-complete", function (e) {
+                    expect(chapterService.book).to.be.ok;
+                    expect(chapterService.book.chapters).to.be.ok;
+                    expect(chapterService.book.chapters).to.have.length.of(1);
+                    expect(chapterService.book.chapters).to.have.deep.property("[0].chapterIndex", "2");
+                    expect(chapterService.book.chapters).to.have.deep.property("[0].text", "This is updated chapter text");
+                    e.target.removeEventListener("chapters-load-complete", arguments.callee);
+                    done();
+                });
+                chapterService.loadChapters({
+                    "book": {
+                        "bookId": books[0].bookId,
+                        "religion": books[0].religion,
+                        "chapters": [{"chapterIndex": "2"}]
+                    }
+                });
+                e.target.removeEventListener("chapter-update-complete", arguments.callee);
+            });
+            chapterService.updateChapter({
+                "book": {
+                    "bookId": books[0].bookId,
+                    "religion": books[0].religion,
+                    "chapters": [{"chapterIndex": "2", "text": "This is updated chapter text"}]
+                }
+            });
+        });
+
+        it("should delete chapter and corresponding toc content", function (done) {
+            chapterService.addEventListener("chapter-remove-complete", function (e) {
+                getChapters.url = location.protocol + "//" + location.host + "/religions/" + books[0].religion + "/books/" + books[0].bookId + "/chapters";
+                getChapters.addEventListener("core-response", function (e) {
+                    expect(getChapters.response.books).to.be.ok;
+                    expect(getChapters.response.books).to.have.length.of(1);
+                    expect(getChapters.response.books[0].chapters).to.have.length.of(1);
+                    expect(getChapters.response.books[0].toc).to.have.length.of(1);
+                    e.target.removeEventListener("core-response", arguments.callee);
+                    done();
+                });
+                getChapters.go();
+                e.target.removeEventListener("chapter-remove-complete", arguments.callee);
+            });
+            chapterService.removeChapter({
+                "book": {
+                    "bookId": books[0].bookId,
+                    "religion": books[0].religion,
+                    "chapters": [{"chapterIndex": "2"}]
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
