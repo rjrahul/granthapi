@@ -9,5 +9,10 @@
     <orderEntry type="library" name="granthapi-tdd node_modules" level="project" />
     <orderEntry type="library" name="Node.js v0.10.32 Core Modules" level="application" />
     <orderEntry type="library" name="Node.js v0.12.0 Core Modules" level="application" />
+    <orderEntry type="library" name="chai-DefinitelyTyped" level="application" />
+    <orderEntry type="library" name="mocha-DefinitelyTyped" level="application" />
+    <orderEntry type="library" name="superagent-DefinitelyTyped" level="application" />
+    <orderEntry type="library" name="polymer-DefinitelyTyped" level="application" />
+    <orderEntry type="library" name="winston-DefinitelyTyped" level="application" />
   </component>
 </module>

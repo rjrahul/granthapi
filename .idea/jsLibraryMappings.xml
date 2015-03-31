@@ -2,6 +2,6 @@
 <project version="4">
   <component name="JavaScriptLibraryMappings">
     <file url="file://$PROJECT_DIR$" libraries="{granthapi-tdd node_modules}" />
-    <file url="PROJECT" libraries="{Node.js v0.12.0 Core Modules}" />
+    <file url="PROJECT" libraries="{Node.js v0.12.0 Core Modules, chai-DefinitelyTyped, granthapi-tdd node_modules, mocha-DefinitelyTyped, polymer-DefinitelyTyped, superagent-DefinitelyTyped, winston-DefinitelyTyped}" />
   </component>
 </project>
