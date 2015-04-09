@@ -10,7 +10,6 @@ var logger = require("winston");
 var Db = require("../lib/Db.js")();
 var configData = require("../config/config.json")[process.env.NODE_ENV] || /* istanbul ignore next: this is only for production */ require("../config/config.json")["defaults"];
 
-console.log(configData);
 /* GET distinct list of religions. */
 router.get("/", function (req, res, next) {
     var params = {
