@@ -3,9 +3,9 @@
 
     Service to provide book operations on API
 -->
-<script src="../config/config.json"></script>
-<link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../core-ajax/core-ajax.html">
+<script src="../config/webconfig.json.js"></script>
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 
 <polymer-element name="book-service" attributes="books">
     <template>
@@ -46,7 +46,7 @@
     </template>
     <script>
         Polymer("book-service", {
-            baseUrl: location.protocol + "//" + location.host + "/religions",
+            baseUrl: webconfig.protocol + "://" + webconfig.apiHost + ":" + webconfig.apiPort + "/religions",
             created: function () {
                 this.books = [];
             },

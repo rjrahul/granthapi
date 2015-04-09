@@ -10,9 +10,10 @@
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
     <title>chapter-service tests</title>
 
-    <script src="../../../bower_components/webcomponentsjs/webcomponents.min.js"></script>
-    <script src="../../../bower_components/web-component-tester/browser.js"></script>
-    <link rel="import" href="../../../bower_components/core-ajax/core-ajax.html">
+    <script src="../../../public/config/webconfig.json.js"></script>
+    <script src="../../../public/bower_components/webcomponentsjs/webcomponents.min.js"></script>
+    <script src="../../../public/bower_components/web-component-tester/browser.js"></script>
+    <link rel="import" href="../../../public/bower_components/core-ajax/core-ajax.html">
 
     <link rel="import" href="../../../public/services/book-service.html">
     <link rel="import" href="../../../public/services/chapter-service.html">
@@ -37,7 +38,7 @@
     var chapterService = document.querySelector("#chapterService");
     var getChapters = document.querySelector("#getChapters");
 
-    var baseUrl = location.protocol + "//" + location.host + "/app/tests/setup";
+    var baseUrl = webconfig.protocol + "://" + webconfig.apiHost + ":" + webconfig.apiPort + "/app/tests/setup";
 
     describe("<chapter-service>", function () {
         var books = [];
