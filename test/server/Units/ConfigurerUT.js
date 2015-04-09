@@ -71,17 +71,17 @@ describe("ConfigurationUT", function () {
             });
         });
 
-        describe("Load from process environment", function () {
+        describe.skip("Load from process environment", function () {
             var oldValue = '';
             before("setup process variables", function () {
-                if (process.env.OPENSHIFT_MONGODB_DB_URL) {
-                    oldValue = process.env.OPENSHIFT_MONGODB_DB_URL;
+                if (process.env.OPENSHIFT_APP_NAME) {
+                    oldValue = process.env.OPENSHIFT_APP_NAME;
                 }
-                process.env.OPENSHIFT_MONGODB_DB_URL = "mongodb://localhost:27017/granths";
+                process.env.OPENSHIFT_APP_NAME = "granths";
             });
 
             after("clean up process variable", function () {
-                process.env.OPENSHIFT_MONGODB_DB_URL = oldValue;
+                process.env.OPENSHIFT_APP_NAME = oldValue;
             });
 
             it("should have properties from process env", function () {
