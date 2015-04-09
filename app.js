@@ -82,6 +82,7 @@ if (app.get("env") === "development" || app.get("env") === "tests") {
 // production error handler
 // no stacktrace leaked to user
 app.use("/app", function (err, req, res, next) {
+    logger.log("error", "Error occurred in /app", err);
     res.status(err.status || 500);
     res.render("error", {
         message: err.message,
@@ -90,6 +91,7 @@ app.use("/app", function (err, req, res, next) {
 });
 
 app.use(function (err, req, res, next) {
+    logger.log("error", "Error occurred", err);
     res.status(err.status || 500);
     res.json({
         message: err.message,
