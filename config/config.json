@@ -3,10 +3,6 @@
     "metCol": "booksMeta",
     "conCol": "content"
   },
-  "production" : {
-    "metCol": "booksMeta",
-    "conCol": "content"
-  },
   "development": {
     "mongodbHost": "localhost",
     "mongodbPort": "27017",

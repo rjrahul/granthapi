@@ -9,7 +9,7 @@ var express = require("express");
 var logger = require("winston");
 var router = express.Router({mergeParams: true});
 var Db = require("../lib/Db.js")();
-var configData = require("../config/config.json")[process.env.NODE_ENV || /* istanbul ignore next: this is only a safety net */ "defaults"];
+var configData = require("../config/config.json")[process.env.NODE_ENV] || /* istanbul ignore next: this is only for production */ require("../config/config.json")["defaults"];
 var ObjectID = require("mongodb").ObjectID;
 
 var excludedBookKeys = ["content", "bookId"];
