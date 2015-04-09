@@ -1,7 +1,7 @@
 #!/bin/bash
 colCount=$(mongo -quiet $OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/$OPENSHIFT_APP_NAME --eval "db.getCollectionNames().length")
 
-#If the query says that parkpoints has 0 documents then we import the data
+#If the query says that db has 0 collections then we add collections
 if [[ $colCount = "0" ]]
 then
 
